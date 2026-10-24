@@ -8,9 +8,10 @@ Measured on the production config (llama.cpp b11840, Q8_0-quantized drafter, ctx
 
 - **Decode: 14.5 → 49.8 tok/s mean (3.4×)** — math 66, JSON 66, code 45, prose 22
 - **Prefill: ~550 tok/s** (plateau from ~2k-token prompts; identical with or without drafter)
-- **TTFT: 0.8 s @ 300-token prompt, 2.2 s @ 1k, 7.2 s @ 4k, 27 s @ 14k** (streamed, cold cache)
-- Decode at depth: ~24 tok/s at 300-token prompts, declining gently to ~23 at 14k on a
-  long-form task; plain stays flat at ~14. Structured tasks (math/JSON/code) reach 45–66.
+- **TTFT (streamed, cold cache): 0.8 s @ ~300-token prompt → 2.2 s @ 1k → 7.7 s @ 4k → 27 s @ 14k**
+- **Decode vs depth** (long-form task, mean of 3 reps): +DFlash ~33 tok/s at 300-token
+  prompts, declining ~30% to ~23 tok/s at 14k; plain stays flat ~14 tok/s. Structured
+  tasks (math/JSON/code) reach 45–66 tok/s at any depth.
 - Fits with ~1.3 GiB to spare alongside NAS and other services
 
 Scripts in [`scripts/`](scripts/), systemd unit in [`systemd/`](systemd/), all raw
@@ -130,7 +131,7 @@ Q8_0 drafter with n-max 7. Raw data: [`results/`](results/).
 | knob | effect | set via |
 |---|---|---|
 | draft length | 7 > 4 > 2 (50.0 / 40.2 / 30.3 tok/s mean) | `BOLT_NMAX` |
-| context | 16384 default; 32768 fits with q8_0 KV (unchanged speed, measured) | `BOLT_CTX` |
+| context | 16384 default; 32768 measured at full speed with f16 KV (591 MiB free) | `BOLT_CTX` |
 | KV dtype | q8_0 saves ~350 MiB; decode cost and long-prompt limits **not settled** — f16 is the safe default | extra args `-ctk q8_0 -ctv q8_0` |
 | drafter | Q8_0 ≡ BF16 (token-identical acceptance) | `BOLT_DRAFT` |
 
