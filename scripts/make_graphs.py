@@ -94,7 +94,7 @@ fig.suptitle("NEMOTRON-3.5 BOLT-E4B // JETSON ORIN NANO 8GB — prompt-depth swe
 fig.text(0.99, 0.01, "llama.cpp b11840 · ctx 16384 · Q8_0 DFlash drafter n-max 7 · temp 0 · 3 reps (dots) · cold cache",
          ha="right", color=DIM, fontsize=9)
 fig.tight_layout(rect=(0, 0.03, 1, 0.95))
-fig.savefig(os.path.join(ASSETS, "overview.png"), dpi=150)
+fig.savefig(os.path.join(ASSETS, "overview_v2.png"), dpi=150)
 plt.close(fig)
 
 # ---------------- decode by task (short prompts) ----------------
@@ -118,7 +118,7 @@ ax.set_title("DECODE BY TASK", color=CY, fontsize=13, fontweight="bold", loc="le
 ax.legend(loc="lower left", bbox_to_anchor=(0, 1.0), ncol=2, frameon=False, labelcolor=WHITE)
 for s in ax.spines.values(): s.set_color(GRID)
 fig.tight_layout()
-fig.savefig(os.path.join(ASSETS, "decode_by_task.png"), dpi=150)
+fig.savefig(os.path.join(ASSETS, "decode_by_task_v2.png"), dpi=150)
 plt.close(fig)
 
 # ---------------- optional: long-context tuning arms ----------------
@@ -147,7 +147,7 @@ if lc:
     axes[0].legend(frameon=False, labelcolor=WHITE, fontsize=9)
     fig.suptitle("LONG-CONTEXT TUNING ARMS", color=WHITE, fontsize=15, fontweight="bold", x=0.01, ha="left")
     fig.tight_layout(rect=(0, 0, 1, 0.94))
-    fig.savefig(os.path.join(ASSETS, "longctx_arms.png"), dpi=150)
+    fig.savefig(os.path.join(ASSETS, "longctx_arms_v2.png"), dpi=150)
     plt.close(fig)
 
 print("charts written to", ASSETS)

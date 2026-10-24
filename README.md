@@ -2,8 +2,8 @@
 
 # Nemotron-3.5-Bolt-E4B on Jetson Orin Nano 8GB: 3.4× decode with DFlash
 
-![Prefill, decode and TTFT vs prompt depth](assets/overview.png)
-![Decode by task, short prompts](assets/decode_by_task.png)
+![Prefill, decode and TTFT vs prompt depth](assets/overview_v2.png)
+![Decode by task, short prompts](assets/decode_by_task_v2.png)
 
 A complete recipe for running [nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB)
 (Q4_K_M GGUF) with its [DFlash speculative-decoding drafter](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB-DFlash)
@@ -116,7 +116,7 @@ kill %1; scripts/bolt-serve.sh plain &
 python3 scripts/depth_sweep.py --out results/depth_plain.json --label plain
 kill %1
 
-python3 scripts/make_graphs.py   # -> assets/overview.png, assets/decode_by_task.png
+python3 scripts/make_graphs.py   # -> assets/overview_v2.png, assets/decode_by_task_v2.png
 ```
 
 ## Results
@@ -138,7 +138,7 @@ Raw data: [`results/`](results/), charts regenerable via `scripts/make_graphs.py
 
 ## Long-context tuning
 
-![Long-context tuning arms](assets/longctx_arms.png)
+![Long-context tuning arms](assets/longctx_arms_v2.png)
 
 Every arm used prompts of 4k, 8k and 14k tokens, 2 reps each, with the Q8_0 drafter at ctx 16384:
 
