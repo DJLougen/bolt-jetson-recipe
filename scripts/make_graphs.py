@@ -64,6 +64,8 @@ def style(ax, title, ylabel):
     ax.set_ylim(0, None)
 
 def ticks(ax, xs):
+    ax.set_xscale("log", base=2)
+    ax.minorticks_off()
     ax.set_xticks(xs)
     ax.set_xticklabels([f"{round(v/1024)}k" if v >= 1000 else f"{v/1024:.1f}k" for v in xs])
 
@@ -88,13 +90,14 @@ for ax, (key, title, ylab) in zip(axes, panels):
         print(f"  {title:7s} {label:9s} " + "  ".join(f"{xi:5.0f}:{mi:6.2f}" for xi, mi in zip(x, m)))
     style(ax, title, ylab)
     ticks(ax, series(arms[0][1], key)[0])
-axes[0].legend(loc="lower right", frameon=False, labelcolor=WHITE)
+h, l = axes[0].get_legend_handles_labels()
+fig.legend(h, l, loc="upper left", bbox_to_anchor=(0.01, 0.935), ncol=len(l), frameon=False, labelcolor=WHITE, fontsize=12)
 fig.suptitle("NEMOTRON-3.5 BOLT-E4B // JETSON ORIN NANO 8GB — prompt-depth sweep",
              color=WHITE, fontsize=15, fontweight="bold", x=0.01, ha="left", y=0.99)
 fig.text(0.99, 0.01, "llama.cpp b11840 · ctx 16384 · Q8_0 DFlash drafter n-max 7 · temp 0 · 3 reps (dots) · cold cache",
          ha="right", color=DIM, fontsize=9)
-fig.tight_layout(rect=(0, 0.03, 1, 0.95))
-fig.savefig(os.path.join(ASSETS, "overview_v2.png"), dpi=150)
+fig.tight_layout(rect=(0, 0.03, 1, 0.88))
+fig.savefig(os.path.join(ASSETS, "overview_v3.png"), dpi=150)
 plt.close(fig)
 
 # ---------------- decode by task (short prompts) ----------------
@@ -118,7 +121,7 @@ ax.set_title("DECODE BY TASK", color=CY, fontsize=13, fontweight="bold", loc="le
 ax.legend(loc="lower left", bbox_to_anchor=(0, 1.0), ncol=2, frameon=False, labelcolor=WHITE)
 for s in ax.spines.values(): s.set_color(GRID)
 fig.tight_layout()
-fig.savefig(os.path.join(ASSETS, "decode_by_task_v2.png"), dpi=150)
+fig.savefig(os.path.join(ASSETS, "decode_by_task_v3.png"), dpi=150)
 plt.close(fig)
 
 # ---------------- optional: long-context tuning arms ----------------
@@ -130,7 +133,8 @@ if lc:
         ok = [r for r in d["rows"] if not r.get("error")]
         by = {}
         for r in ok: by.setdefault(r["requested_depth"], []).append(r)
-        rows.append((d["label"], by))
+        NAMES = {"base": "n-max 7, f16 KV (production)", "kvq8": "n-max 7, q8_0 KV", "nmax4": "n-max 4", "nmax3": "n-max 3"}
+        rows.append((NAMES.get(d["label"], d["label"]), by))
     fig, axes = plt.subplots(1, 3, figsize=(17, 5.2))
     depths = sorted({k for _, by in rows for k in by})
     width = 0.8 / len(rows)
@@ -144,10 +148,11 @@ if lc:
             print(f"  {title:7s} {label:8s} " + "  ".join(f"{d}:{v:6.2f}" for d, v in zip(depths, vals)))
         ax.set_xticks(range(len(depths)), [f"{d//1024}k" for d in depths])
         style(ax, title, ylab); ax.set_xlabel("requested prompt depth")
-    axes[0].legend(frameon=False, labelcolor=WHITE, fontsize=9)
+    h, l = axes[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="upper left", bbox_to_anchor=(0.01, 0.92), ncol=len(l), frameon=False, labelcolor=WHITE, fontsize=11)
     fig.suptitle("LONG-CONTEXT TUNING ARMS", color=WHITE, fontsize=15, fontweight="bold", x=0.01, ha="left")
-    fig.tight_layout(rect=(0, 0, 1, 0.94))
-    fig.savefig(os.path.join(ASSETS, "longctx_arms_v2.png"), dpi=150)
+    fig.tight_layout(rect=(0, 0, 1, 0.84))
+    fig.savefig(os.path.join(ASSETS, "longctx_arms_v3.png"), dpi=150)
     plt.close(fig)
 
 print("charts written to", ASSETS)
