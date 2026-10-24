@@ -1,24 +1,24 @@
-# Nemotron-3.5-Bolt-E4B on Jetson Orin Nano 8GB — 3.4× decode with DFlash
+![Nemotron-3.5 Bolt-E4B on Jetson](assets/banner.png)
+
+# Nemotron-3.5-Bolt-E4B on Jetson Orin Nano 8GB: 3.4× decode with DFlash
+
+![Prefill, decode and TTFT vs prompt depth](assets/overview.png)
+![Decode by task, short prompts](assets/decode_by_task.png)
 
 A complete recipe for running [nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB)
 (Q4_K_M GGUF) with its [DFlash speculative-decoding drafter](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB-DFlash)
-on an **8 GB Jetson Orin Nano Super**, using llama.cpp.
+on an **8 GB Jetson Orin Nano Super**, using llama.cpp b11840 with a Q8_0-quantized drafter at ctx 16384.
 
-Measured on the production config (llama.cpp b11840, Q8_0-quantized drafter, ctx 16384):
+| | plain | + DFlash |
+|---|---|---|
+| decode, short prompts (mean of 4 tasks) | 14.5 tok/s | **49.8 tok/s (3.4×)** |
+| decode, long-form task @ 0.3k / 14k prompt | 14.4 / 13.6 | **33.0 / 23.4** |
+| prefill @ 4k prompt | 586 tok/s | 547 tok/s |
+| TTFT @ 1k / 4k / 14k prompt | 2.0 / 7.2 / 26.4 s | 2.2 / 7.7 / 27.9 s |
 
-![Decode tok/s by prompt type](assets/decode_by_task.png)
-![Decode vs prompt depth](assets/decode_vs_depth.png)
-![Prefill vs prompt depth](assets/prefill_vs_depth.png)
-![TTFT vs prompt depth](assets/prefill_ttft_vs_depth.png)
-
-- **Decode: 14.5 → 49.8 tok/s mean (3.4×)** on short prompts — math 66, JSON 66, code 45, prose 22
-- **Prefill: ~550–590 tok/s** plateau from ~2k-token prompts; DFlash runs 5–8% slower
-  than plain prefill (drafter verification overhead at load time)
-- **TTFT (streamed, cold cache): 0.8 s @ ~300-token prompt → 2.2 s @ 1k → 7.7 s @ 4k → 27 s @ 14k**
-- **Decode vs depth** (long-form task, mean of 3 reps): +DFlash ~33 tok/s at 300-token
-  prompts, declining ~30% to ~23 tok/s at 14k; plain stays flat ~14 tok/s. The 45–66
-  numbers for math/JSON/code were measured on short (~100-token) prompts.
-- Fits with ~1.3 GiB to spare alongside NAS and other services
+- DFlash prefill runs 5–8% below plain. The cause hasn't been isolated.
+- Math, JSON and code reach 45–66 tok/s, measured on short (~100-token) prompts.
+- Memory: about 1.3 GiB free with the service loaded.
 
 Scripts in [`scripts/`](scripts/), systemd unit in [`systemd/`](systemd/), all raw
 numbers in [`results/`](results/).
@@ -106,9 +106,17 @@ the rest of the system. It binds `127.0.0.1` (plus a tailnet IP if you add one);
 ## 6. Measure it yourself
 
 ```bash
-python3 scripts/bolt_bench.py http://127.0.0.1:8000 myrun 256   # decode, 4 prompt types
-python3 scripts/depth_sweep.py --out results/depth_sweep.json   # decode/prefill/TTFT vs depth
-python3 scripts/make_graphs.py                                  # regenerates the charts
+# decode on 4 short prompt types (server running in dflash or plain mode)
+python3 scripts/bolt_bench.py http://127.0.0.1:8000 myrun 256
+
+# prompt-depth sweep, one run per arm (LLAMA_CPP_DIR supplies the public text corpus)
+scripts/bolt-serve.sh dflash &   # wait for /health
+python3 scripts/depth_sweep.py --out results/depth_dflash.json --label dflash-q8d
+kill %1; scripts/bolt-serve.sh plain &
+python3 scripts/depth_sweep.py --out results/depth_plain.json --label plain
+kill %1
+
+python3 scripts/make_graphs.py   # -> assets/overview.png, assets/decode_by_task.png
 ```
 
 ## Results
