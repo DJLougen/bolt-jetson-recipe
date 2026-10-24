@@ -6,12 +6,18 @@ on an **8 GB Jetson Orin Nano Super**, using llama.cpp.
 
 Measured on the production config (llama.cpp b11840, Q8_0-quantized drafter, ctx 16384):
 
-- **Decode: 14.5 → 49.8 tok/s mean (3.4×)** — math 66, JSON 66, code 45, prose 22
-- **Prefill: ~550 tok/s** (plateau from ~2k-token prompts; identical with or without drafter)
+![Decode tok/s by prompt type](assets/decode_by_task.png)
+![Decode vs prompt depth](assets/decode_vs_depth.png)
+![Prefill vs prompt depth](assets/prefill_vs_depth.png)
+![TTFT vs prompt depth](assets/prefill_ttft_vs_depth.png)
+
+- **Decode: 14.5 → 49.8 tok/s mean (3.4×)** on short prompts — math 66, JSON 66, code 45, prose 22
+- **Prefill: ~550–590 tok/s** plateau from ~2k-token prompts; DFlash runs 5–8% slower
+  than plain prefill (drafter verification overhead at load time)
 - **TTFT (streamed, cold cache): 0.8 s @ ~300-token prompt → 2.2 s @ 1k → 7.7 s @ 4k → 27 s @ 14k**
 - **Decode vs depth** (long-form task, mean of 3 reps): +DFlash ~33 tok/s at 300-token
-  prompts, declining ~30% to ~23 tok/s at 14k; plain stays flat ~14 tok/s. Structured
-  tasks (math/JSON/code) reach 45–66 tok/s at any depth.
+  prompts, declining ~30% to ~23 tok/s at 14k; plain stays flat ~14 tok/s. The 45–66
+  numbers for math/JSON/code were measured on short (~100-token) prompts.
 - Fits with ~1.3 GiB to spare alongside NAS and other services
 
 Scripts in [`scripts/`](scripts/), systemd unit in [`systemd/`](systemd/), all raw
@@ -102,19 +108,15 @@ the rest of the system. It binds `127.0.0.1` (plus a tailnet IP if you add one);
 ```bash
 python3 scripts/bolt_bench.py http://127.0.0.1:8000 myrun 256   # decode, 4 prompt types
 python3 scripts/depth_sweep.py --out results/depth_sweep.json   # decode/prefill/TTFT vs depth
-python3 scripts/make_graphs.py                                  # regenerates the charts below
+python3 scripts/make_graphs.py                                  # regenerates the charts
 ```
 
 ## Results
 
 Measured on Jetson Orin Nano Super (MAXN_SUPER, GPU 1020 MHz, JetPack 7.2,
 CUDA 13.2), llama.cpp b11840, single runs at temp 0, thinking off, ctx 16384,
-Q8_0 drafter with n-max 7. Raw data: [`results/`](results/).
-
-![Decode tok/s by prompt type](assets/decode_by_task.png)
-![Decode vs prompt depth](assets/decode_vs_depth.png)
-![Prefill vs prompt depth](assets/prefill_vs_depth.png)
-![TTFT vs prompt depth](assets/prefill_ttft_vs_depth.png)
+Q8_0 drafter with n-max 7; depth curves are means of 3 reps.
+Raw data: [`results/`](results/), charts regenerable via `scripts/make_graphs.py`.
 
 **Caveats we verified so you don't have to:**
 
