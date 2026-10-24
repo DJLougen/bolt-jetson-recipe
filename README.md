@@ -136,6 +136,17 @@ Raw data: [`results/`](results/), charts regenerable via `scripts/make_graphs.py
 - The 2.79 GiB per-layer embedding table lives on SSD, read on demand — resident
   memory is ~6.2 GiB with 16k ctx.
 
+## Long-context tuning
+
+![Long-context tuning arms](assets/longctx_arms.png)
+
+Every arm used prompts of 4k, 8k and 14k tokens, 2 reps each, with the Q8_0 drafter at ctx 16384:
+
+- **Draft length 7 / 4 / 3:** within noise of each other at depth (24.4 / 24.4 / 23.9 tok/s at 14k). Keep 7, because it wins clearly on short prompts.
+- **q8_0 KV cache:** no gain. 22.3 vs 24.4 tok/s at 14k, prefill 2% lower, TTFT 0.4 s worse.
+- **Larger prefill batch (`-ub 1024` / `2048`):** doesn't fit. Gemma-4's 262k-token vocabulary makes the compute buffer 2.1 GB at ub 1024, so the default 512 is the ceiling on 8 GB.
+- **What limits long context:** prefill tops out around 550 tok/s, so a 14k prompt costs about 27 s cold. In a chat, prompt caching (on by default in llama-server) means later turns only process the new tokens.
+
 ## Tuning knobs
 
 | knob | effect | set via |
