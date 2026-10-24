@@ -1,0 +1,58 @@
+{
+ "plain": {
+  "label": "plain-final",
+  "rows": [
+   {
+    "prompt": "code",
+    "tg_tps": 14.53
+   },
+   {
+    "prompt": "math",
+    "tg_tps": 14.54
+   },
+   {
+    "prompt": "prose",
+    "tg_tps": 14.51
+   },
+   {
+    "prompt": "extract",
+    "tg_tps": 14.54
+   }
+  ]
+ },
+ "dflash": {
+  "label": "dflash-q8d-final",
+  "rows": [
+   {
+    "prompt": "code",
+    "tg_tps": 45.13,
+    "draft_n": 402,
+    "draft_acc": 197
+   },
+   {
+    "prompt": "math",
+    "tg_tps": 66.02,
+    "draft_n": 272,
+    "draft_acc": 216
+   },
+   {
+    "prompt": "prose",
+    "tg_tps": 22.27,
+    "draft_n": 819,
+    "draft_acc": 135
+   },
+   {
+    "prompt": "extract",
+    "tg_tps": 65.69,
+    "draft_n": 84,
+    "draft_acc": 66
+   }
+  ]
+ },
+ "meta": {
+  "date": "2026-10-23",
+  "ctx": 16384,
+  "draft": "Q8_0 n-max 7",
+  "source": "single runs, temp 0; both arms from bench logs (plain-final / dflash-q8d-final)"
+ }
+}

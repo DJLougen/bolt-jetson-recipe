@@ -6,9 +6,11 @@ on an **8 GB Jetson Orin Nano Super**, using llama.cpp.
 
 Measured on the production config (llama.cpp b11840, Q8_0-quantized drafter, ctx 16384):
 
-- **Decode: 14.5 → 50 tok/s mean (3.4×)** — math 67, JSON 66, code 45, prose 22
-- **Prefill: ~550 tok/s** (plateau from ~2k-token prompts)
-- **TTFT: 0.8 s @ 300-token prompt, 2.5 s @ 1k, 6.7 s @ 3.7k** (streamed, cold cache)
+- **Decode: 14.5 → 49.8 tok/s mean (3.4×)** — math 66, JSON 66, code 45, prose 22
+- **Prefill: ~550 tok/s** (plateau from ~2k-token prompts; identical with or without drafter)
+- **TTFT: 0.8 s @ 300-token prompt, 2.2 s @ 1k, 7.2 s @ 4k, 27 s @ 14k** (streamed, cold cache)
+- Decode at depth: ~24 tok/s at 300-token prompts, declining gently to ~23 at 14k on a
+  long-form task; plain stays flat at ~14. Structured tasks (math/JSON/code) reach 45–66.
 - Fits with ~1.3 GiB to spare alongside NAS and other services
 
 Scripts in [`scripts/`](scripts/), systemd unit in [`systemd/`](systemd/), all raw
@@ -109,7 +111,9 @@ CUDA 13.2), llama.cpp b11840, single runs at temp 0, thinking off, ctx 16384,
 Q8_0 drafter with n-max 7. Raw data: [`results/`](results/).
 
 ![Decode tok/s by prompt type](assets/decode_by_task.png)
-![Prefill and TTFT vs prompt depth](assets/prefill_ttft_vs_depth.png)
+![Decode vs prompt depth](assets/decode_vs_depth.png)
+![Prefill vs prompt depth](assets/prefill_vs_depth.png)
+![TTFT vs prompt depth](assets/prefill_ttft_vs_depth.png)
 
 **Caveats we verified so you don't have to:**
 
@@ -126,8 +130,8 @@ Q8_0 drafter with n-max 7. Raw data: [`results/`](results/).
 | knob | effect | set via |
 |---|---|---|
 | draft length | 7 > 4 > 2 (50.0 / 40.2 / 30.3 tok/s mean) | `BOLT_NMAX` |
-| context | 16384 default; 32768 fits only with q8_0 KV | `BOLT_CTX` |
-| KV dtype | q8_0 saves ~350 MiB, ~2% decode cost | extra args `-ctk q8_0 -ctv q8_0` |
+| context | 16384 default; 32768 fits with q8_0 KV (unchanged speed, measured) | `BOLT_CTX` |
+| KV dtype | q8_0 saves ~350 MiB; decode cost and long-prompt limits **not settled** — f16 is the safe default | extra args `-ctk q8_0 -ctv q8_0` |
 | drafter | Q8_0 ≡ BF16 (token-identical acceptance) | `BOLT_DRAFT` |
 
 ## Troubleshooting
