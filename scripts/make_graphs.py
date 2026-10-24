@@ -156,3 +156,34 @@ if lc:
     plt.close(fig)
 
 print("charts written to", ASSETS)
+
+# ---------------- full 64k context (q8_0 KV, -c 65536, 1 rep) ----------------
+c64 = [(p, lab, col) for p, lab, col in (("c64_plain-q8.json", "plain", CY), ("c64_dflash-q8.json", "+ DFlash", LIME))
+       if os.path.exists(os.path.join(RES, p))]
+if c64:
+    fig, axes = plt.subplots(1, 3, figsize=(17, 5.6))
+    print("64k context (q8_0 KV, 1 rep):")
+    for ax, (key, title, ylab) in zip(axes, panels):
+        series_ = []
+        for p, lab, col in c64:
+            rows = [r for r in json.load(open(os.path.join(RES, p)))["rows"] if not r.get("error")]
+            rows.sort(key=lambda r: r["prompt_tokens"])
+            series_.append((lab, col, [r["prompt_tokens"] for r in rows], [r[key] for r in rows]))
+        top = max(s_[3][-1] for s_ in series_)
+        for lab, col, x, v in series_:
+            ax.plot(x, v, "-o", color=col, lw=2.4, ms=6, label=lab)
+            ax.annotate(f"{v[-1]:.0f}" if key == "prefill_tps" else f"{v[-1]:.1f}", (x[-1], v[-1]),
+                        textcoords="offset points", xytext=(8, 7 if v[-1] == top else -15),
+                        color=col, fontsize=10, fontweight="bold")
+            print(f"  {title:7s} {lab:9s} " + "  ".join(f"{a}:{b:7.2f}" for a, b in zip(x, v)))
+        style(ax, title, ylab)
+        ax.set_xticks(x); ax.set_xticklabels([f"{round(t/1024)}k" for t in x])
+    h, l = axes[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="upper left", bbox_to_anchor=(0.01, 0.935), ncol=len(l), frameon=False, labelcolor=WHITE, fontsize=12)
+    fig.suptitle("FULL 64K CONTEXT — q8_0 KV cache (f16 KV runs out of memory at 64k)",
+                 color=WHITE, fontsize=15, fontweight="bold", x=0.01, ha="left", y=0.99)
+    fig.text(0.99, 0.01, "llama.cpp b11840 · -c 65536 · -ctk/-ctv q8_0 · Q8_0 DFlash drafter n-max 7 · temp 0 · 1 rep · cold cache",
+             ha="right", color=DIM, fontsize=9)
+    fig.tight_layout(rect=(0, 0.03, 1, 0.88))
+    fig.savefig(os.path.join(ASSETS, "context64k_v1.png"), dpi=150)
+    plt.close(fig)

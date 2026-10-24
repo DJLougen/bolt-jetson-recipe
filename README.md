@@ -4,6 +4,7 @@
 
 ![Prefill, decode and TTFT vs prompt depth](assets/overview_v3.png)
 ![Decode by task, short prompts](assets/decode_by_task_v3.png)
+![Full 64k context](assets/context64k_v1.png)
 
 A complete recipe for running [nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB)
 (Q4_K_M GGUF) with its [DFlash speculative-decoding drafter](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB-DFlash)
@@ -15,10 +16,13 @@ on an **8 GB Jetson Orin Nano Super**, using llama.cpp b11840 with a Q8_0-quanti
 | decode, long-form task @ 0.3k / 14k prompt | 14.4 / 13.6 | **33.0 / 23.4** |
 | prefill @ 4k prompt | 586 tok/s | 547 tok/s |
 | TTFT @ 1k / 4k / 14k prompt | 2.0 / 7.2 / 26.4 s | 2.2 / 7.7 / 27.9 s |
+| **full 64k context** (q8_0 KV), decode @ 16k / 62k | 12.0 / 8.4 tok/s | **23.5 / 14.5 tok/s (1.7×)** |
+| TTFT @ 62k prompt (cold) | 163 s | 169 s |
 
 - DFlash prefill runs 5–8% below plain. The cause hasn't been isolated.
 - Math, JSON and code reach 45–66 tok/s, measured on short (~100-token) prompts.
-- Memory: about 1.3 GiB free with the service loaded.
+- Memory: about 1.3 GiB free with the service loaded (ctx 16k, f16 KV).
+- **The full 64k context needs `-c 65536 -ctk q8_0 -ctv q8_0`.** With f16 KV it runs out of memory at startup, and q8_0 leaves about 780 MiB free. DFlash keeps a 1.7–2× decode lead across the whole range. A cold 62k-token prompt takes about 2.8 minutes before the first token.
 
 Scripts in [`scripts/`](scripts/), systemd unit in [`systemd/`](systemd/), all raw
 numbers in [`results/`](results/).
@@ -144,8 +148,8 @@ Every arm used prompts of 4k, 8k and 14k tokens, 2 reps each, with the Q8_0 draf
 
 - **Draft length 7 / 4 / 3:** within noise of each other at depth (24.4 / 24.4 / 23.9 tok/s at 14k). Keep 7, because it wins clearly on short prompts.
 - **q8_0 KV cache:** no gain. 22.3 vs 24.4 tok/s at 14k, prefill 2% lower, TTFT 0.4 s worse.
-- **Larger prefill batch (`-ub 1024` / `2048`):** doesn't fit. Gemma-4's 262k-token vocabulary makes the compute buffer 2.1 GB at ub 1024, so the default 512 is the ceiling on 8 GB.
-- **What limits long context:** prefill tops out around 550 tok/s, so a 14k prompt costs about 27 s cold. In a chat, prompt caching (on by default in llama-server) means later turns only process the new tokens.
+- **Larger prefill batch (`-ub 1024` / `2048`):** doesn't fit. Gemma-4's 262k-token vocabulary makes the compute buffer 2.1 GB at ub 1024, so 1024 and above run out of memory on 8 GB. 768 hasn't been tested.
+- **What limits long context:** prefill tops out around 550 tok/s, so a 14k prompt costs about 27 s cold. In a chat, llama-server's prompt caching (on by default) should mean later turns only process the new tokens. That is expected behaviour, not measured here.
 
 ## Tuning knobs
 
