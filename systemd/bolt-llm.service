@@ -1,19 +1,21 @@
 [Unit]
-Description=Nemotron-3.5-Bolt-E4B-4GB (Q4_K_M) + DFlash Q8_0 drafter (llama-server b11840, :8000)
+Description=Nemotron-3.5-Bolt-E4B-4GB (Q4_K_M) + DFlash Q8_0 drafter (llama-server, :8000)
 Wants=network-online.target
-After=network-online.target jetson-clocks.service tailscaled.service
+After=network-online.target jetson-clocks.service
+# If you bind a Tailscale IP, also add: tailscaled.service
 
 [Service]
 Type=simple
-User=djl
-WorkingDirectory=/home/djl/models/bolt
+User=<user>
+WorkingDirectory=<home>/models/bolt
 Environment=BOLT_CTX=16384
-Environment=BOLT_HOST=127.0.0.1,100.69.73.74
+# Bind localhost only; add your tailnet IP (comma-separated) if you need remote access.
+Environment=BOLT_HOST=127.0.0.1
 Environment=BOLT_DRAFT=Nemotron-3.5-Bolt-E4B-DFlash-Q8_0.gguf
-ExecStart=/home/djl/models/bolt/bolt-serve.sh dflash
+ExecStart=<home>/models/bolt/bolt-serve.sh dflash
 Restart=on-failure
 RestartSec=10
-# Jetson is the always-on NAS/memory host: if RAM runs out, kill the LLM first.
+# On an always-on box (NAS etc.): if RAM runs out, kill the LLM first.
 OOMScoreAdjust=900
 
 [Install]

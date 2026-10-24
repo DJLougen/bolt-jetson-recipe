@@ -16,15 +16,19 @@ import argparse, json, time, urllib.request, random, string, os, glob
 
 def load_corpus():
     # Public text only (llama.cpp docs + sources) — nothing private goes into results.
+    root = os.path.expanduser(os.environ.get("LLAMA_CPP_DIR", "~/llama.cpp-bolt"))
     texts = []
-    for pat in ("/home/djl/llama.cpp-bolt/docs/*.md", "/home/djl/llama.cpp-bolt/README.md",
-                "/home/djl/llama.cpp-bolt/src/*.cpp"):
+    for pat in (os.path.join(root, "docs", "*.md"),
+                os.path.join(root, "README.md"),
+                os.path.join(root, "src", "*.cpp")):
         for p in sorted(glob.glob(pat)):
             try:
                 texts.append(open(p, encoding="utf-8", errors="ignore").read())
             except OSError:
                 pass
-    return "\n".join(texts)
+    corpus = "\n".join(texts)
+    assert corpus, f"no corpus found under {root} — set LLAMA_CPP_DIR"
+    return corpus
 
 TASK = ("Go through the text above section by section and explain each section "
         "in detail in your own words, in at least 400 words total.")
