@@ -1,0 +1,4 @@
+{"arm": "dflash", "prompt": "prose", "mode": "cache_on", "hashes": ["2fe20508", "82f3d920", "82f3d920", "82f3d920"], "distinct": 2, "first": "Silas had known the rhythm of the sea for fifty years. The sweep of th"}
+{"arm": "dflash", "prompt": "prose", "mode": "cache_off", "hashes": ["2fe20508", "2fe20508", "2fe20508", "2fe20508"], "distinct": 1, "first": "Silas had known the rhythm of the sea for fifty years. The sweep of th"}
+{"arm": "dflash", "prompt": "code", "mode": "cache_on", "hashes": ["442ca76d", "b4d8e674", "b4d8e674", "b4d8e674"], "distinct": 2, "first": "```python from datetime import datetime from typing import Optional  d"}
+{"arm": "dflash", "prompt": "code", "mode": "cache_off", "hashes": ["442ca76d", "442ca76d", "442ca76d", "442ca76d"], "distinct": 1, "first": "```python from datetime import datetime from typing import Optional  d"}

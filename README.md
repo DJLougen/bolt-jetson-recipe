@@ -150,6 +150,18 @@ Every arm used prompts of 4k, 8k and 14k tokens, 2 reps each, with the Q8_0 draf
 - **Larger prefill batch (`-ub 1024` / `2048`):** doesn't fit. Gemma-4's 262k-token vocabulary makes the compute buffer 2.1 GB at ub 1024, so 1024 and above run out of memory on 8 GB. 768 hasn't been tested.
 - **What limits long context:** prefill tops out around 550 tok/s, so a 14k prompt costs about 27 s cold. In a chat, llama-server's prompt caching (on by default) should mean later turns only process the new tokens. That is expected behaviour, not measured here.
 
+## Why outputs differ between runs
+
+Measured with `scripts/determinism.py` (4 identical requests per prompt; raw results in `results/determinism_*.jsonl`):
+
+| cause | effect | fix |
+|---|---|---|
+| **Default sampling is temperature 1.0, top-p 0.95, top-k 64, random seed** (read from the GGUF, NVIDIA's recommended settings) | A request that doesn't set `temperature` gets a different answer each time: 3 runs gave 3 different outputs | Send `"temperature": 0` for repeatable output, or a fixed `"seed"` with your sampling settings |
+| **Prompt-cache reuse** (llama-server default) | Even at temp 0, the first request and later repeats of the same prompt differ: cold run = output A, cached repeats = output B. Seen in both plain and DFlash mode, diverging after 10–370 characters | Send `"cache_prompt": false` for bit-repeatable output. All 4 runs were identical in both modes. This costs TTFT in multi-turn chats, because the full prompt is reprocessed every turn |
+| **DFlash vs plain** | At temp 0, DFlash output can differ from plain output (llama.cpp [#25618](https://github.com/ggml-org/llama.cpp/issues/25618)). Here: different from the first sentence on the prose prompt, from ~86 characters on the code prompt | Expected with speculative decoding in llama.cpp today. Use plain mode if output must match a non-speculative reference |
+
+None of this is a quality bug: each variant is a valid greedy or sampled continuation. Tiny numeric differences (cached vs fresh prompt computation, batched draft verification) flip near-tied tokens, and the text drifts from there.
+
 ## Tuning knobs
 
 | knob | effect | set via |

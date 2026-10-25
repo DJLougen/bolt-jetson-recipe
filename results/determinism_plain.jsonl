@@ -1,0 +1,4 @@
+{"arm": "plain", "prompt": "prose", "mode": "cache_on", "hashes": ["74851b3c", "f8b7e7e6", "f8b7e7e6", "f8b7e7e6"], "distinct": 2, "first": "Silas had seen countless storms batter the granite tower of the Black "}
+{"arm": "plain", "prompt": "prose", "mode": "cache_off", "hashes": ["74851b3c", "74851b3c", "74851b3c", "74851b3c"], "distinct": 1, "first": "Silas had seen countless storms batter the granite tower of the Black "}
+{"arm": "plain", "prompt": "code", "mode": "cache_on", "hashes": ["d7836c2e", "39d7c651", "39d7c651", "39d7c651"], "distinct": 2, "first": "```python from datetime import datetime from typing import Optional  d"}
+{"arm": "plain", "prompt": "code", "mode": "cache_off", "hashes": ["d7836c2e", "d7836c2e", "d7836c2e", "d7836c2e"], "distinct": 1, "first": "```python from datetime import datetime from typing import Optional  d"}
