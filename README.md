@@ -1,23 +1,40 @@
-![Nemotron-3.5 Bolt-E4B on Jetson](assets/banner.png)
+![Nemotron-3.5 Bolt-E4B on Jetson](assets/banner_v2.png)
 
-# Nemotron-3.5-Bolt-E4B on Jetson Orin Nano 8GB: 3.4× decode with DFlash
+# Nemotron-3.5-Bolt-E4B on Jetson Orin Nano 8GB: 2.3× real-use decode with DFlash
+
+**Real-use speed** is measured with what a client gets when it doesn't override anything: temperature 1.0, top-p 0.95, thinking on, streamed.
+
+![Real usage: decode and time to answer](assets/real_usage_v1.png)
+
+| real use (server defaults) | plain | + DFlash |
+|---|---|---|
+| **decode, all tasks** (token-weighted) | 14.4 tok/s | **33.9 tok/s (2.3×)** |
+| decode range by task | 14.4–14.5 | 22.7 (prose) – 67.5 (math) |
+| **time to first answer token** (incl. thinking) | 17.5 s mean | **6.0 s mean** |
+| time to first token (thinking starts) | 0.46 s median | 0.37 s median |
+
+Short prompts, 10 requests per arm (2 per task). An earlier run of 15 requests per arm gave 34.0 vs 14.5 tok/s. Raw data: `results/real_*.jsonl`.
+
+A recipe for running [nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB)
+(Q4_K_M GGUF) with its [DFlash speculative-decoding drafter](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB-DFlash)
+on an **8 GB Jetson Orin Nano Super**, using llama.cpp b11840 with a Q8_0-quantized drafter at ctx 16384.
+
+### Controlled benchmarks (temperature 0, thinking off)
+
+At temperature 0 the drafter's guesses get accepted more often, so these numbers are higher than real use. They're kept for comparing configs.
 
 ![Prefill, decode and TTFT vs prompt depth](assets/overview_v3.png)
 ![Decode by task, short prompts](assets/decode_by_task_v3.png)
 ![Full 64k context](assets/context64k_v1.png)
 ![Long-context tuning arms](assets/longctx_arms_v3.png)
 
-A complete recipe for running [nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB)
-(Q4_K_M GGUF) with its [DFlash speculative-decoding drafter](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB-DFlash)
-on an **8 GB Jetson Orin Nano Super**, using llama.cpp b11840 with a Q8_0-quantized drafter at ctx 16384.
-
-| | plain | + DFlash |
+| temp 0, thinking off | plain | + DFlash |
 |---|---|---|
-| decode, short prompts (mean of 4 tasks) | 14.5 tok/s | **49.8 tok/s (3.4×)** |
-| decode, long-form task @ 0.3k / 14k prompt | 14.4 / 13.6 | **33.0 / 23.4** |
+| decode, short prompts (mean of 4 tasks) | 14.5 tok/s | 49.8 tok/s (3.4×) |
+| decode, long-form task @ 0.3k / 14k prompt | 14.4 / 13.6 | 33.0 / 23.4 |
 | prefill @ 4k prompt | 586 tok/s | 547 tok/s |
 | TTFT @ 1k / 4k / 14k prompt | 2.0 / 7.2 / 26.4 s | 2.2 / 7.7 / 27.9 s |
-| **full 64k context** (q8_0 KV), decode @ 16k / 62k | 12.0 / 8.4 tok/s | **23.5 / 14.5 tok/s (1.7×)** |
+| full 64k context (q8_0 KV), decode @ 16k / 62k | 12.0 / 8.4 tok/s | 23.5 / 14.5 tok/s (1.7×) |
 | TTFT @ 62k prompt (cold) | 163 s | 169 s |
 
 - DFlash prefill runs 5–8% below plain. The cause hasn't been isolated.
@@ -121,7 +138,9 @@ kill %1; scripts/bolt-serve.sh plain &
 python3 scripts/depth_sweep.py --out results/depth_plain.json --label plain
 kill %1
 
-python3 scripts/make_graphs.py   # -> assets/*.png (overview, decode_by_task, context64k, longctx_arms)
+python3 scripts/real_bench.py dflash   # real-use speed (server defaults, thinking on)
+python3 scripts/make_graphs.py   # -> assets/*.png
+python3 scripts/make_banner.py   # -> assets/banner_v2.png (chips read from results/)
 ```
 
 ## Results

@@ -187,3 +187,47 @@ if c64:
     fig.tight_layout(rect=(0, 0.03, 1, 0.88))
     fig.savefig(os.path.join(ASSETS, "context64k_v1.png"), dpi=150)
     plt.close(fig)
+
+# ---------------- real usage: server-default sampling, thinking on ----------------
+def load_real(f):
+    return [json.loads(l) for l in open(os.path.join(RES, f)) if l.startswith("{")]
+if os.path.exists(os.path.join(RES, "real_dflash.jsonl")) and os.path.exists(os.path.join(RES, "real_plain.jsonl")):
+    R = {"plain": load_real("real_plain.jsonl"), "dflash": load_real("real_dflash.jsonl")}
+    tasks_r = ["chat", "code", "math", "extract", "prose"]
+    def agg(rows, p):
+        rs = [r for r in rows if r["prompt"] == p] if p != "ALL" else rows
+        assert rs, p
+        dec = sum(r["tokens"] for r in rs) / sum(r["tokens"] / r["decode_tps"] for r in rs)
+        ans = mean(r["time_to_answer_s"] for r in rs)
+        return dec, ans
+    names_r = tasks_r + ["ALL"]
+    vals = {a: [agg(R[a], p) for p in names_r] for a in R}
+    print("real usage (temp 1.0 default, thinking on):")
+    for a in R:
+        print(f"  {a:7s} " + "  ".join(f"{p}:{d:5.1f}t/s,{t:5.1f}s" for p, (d, t) in zip(names_r, vals[a])))
+    fig, axes = plt.subplots(1, 2, figsize=(17, 5.8))
+    y = list(range(len(names_r)))
+    labels_r = [n if n != "ALL" else "all tasks" for n in names_r]
+    for ax, idx, title, xl, fmt in ((axes[0], 0, "DECODE", "tok/s (higher is better)", "{:.1f}"),
+                                    (axes[1], 1, "TIME TO ANSWER", "seconds to first answer token, incl. thinking (lower is better)", "{:.1f}s")):
+        pv_ = [vals["plain"][i][idx] for i in y]; dv_ = [vals["dflash"][i][idx] for i in y]
+        ax.barh([v + 0.2 for v in y], pv_, height=0.38, color=CY, alpha=0.55, label="plain")
+        ax.barh([v - 0.2 for v in y], dv_, height=0.38, color=LIME, label="+ DFlash")
+        for v, yy in zip(pv_, y): ax.text(v + max(pv_ + dv_) * 0.01, yy + 0.2, fmt.format(v), va="center", color=CY, fontsize=10)
+        for v, yy, p in zip(dv_, y, pv_):
+            ratio = (v / p) if idx == 0 else (p / v)
+            ax.text(v + max(pv_ + dv_) * 0.01, yy - 0.2, fmt.format(v) + f"  ({ratio:.1f}×)", va="center",
+                    color=LIME, fontsize=10, fontweight="bold")
+        ax.set_yticks(y, labels_r); ax.invert_yaxis(); ax.grid(axis="y", visible=False)
+        ax.set_xlim(0, max(pv_ + dv_) * 1.32); ax.set_xlabel(xl)
+        ax.set_title(title, color=CY, fontsize=13, fontweight="bold", loc="left", pad=10)
+        for s_ in ax.spines.values(): s_.set_color(GRID)
+    h, l = axes[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="upper left", bbox_to_anchor=(0.01, 0.935), ncol=2, frameon=False, labelcolor=WHITE, fontsize=12)
+    fig.suptitle("REAL USAGE — server defaults: temperature 1.0, top-p 0.95, thinking ON",
+                 color=WHITE, fontsize=15, fontweight="bold", x=0.01, ha="left", y=0.99)
+    fig.text(0.99, 0.01, f"llama.cpp b11840 · ctx 16384 · Q8_0 DFlash n-max 7 · streamed · {len(R['dflash'])} requests/arm (2 per task) · short prompts",
+             ha="right", color=DIM, fontsize=9)
+    fig.tight_layout(rect=(0, 0.03, 1, 0.88))
+    fig.savefig(os.path.join(ASSETS, "real_usage_v1.png"), dpi=150)
+    plt.close(fig)

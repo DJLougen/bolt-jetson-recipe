@@ -1,0 +1,16 @@
+{"ttft_s": 0.549, "decode_tps": 14.4, "tokens": 1024, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "chat", "rep": 0}
+{"ttft_s": 0.379, "decode_tps": 14.43, "tokens": 1024, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "chat", "rep": 1}
+{"ttft_s": 0.379, "decode_tps": 14.44, "tokens": 1024, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "chat", "rep": 2}
+{"ttft_s": 0.477, "decode_tps": 14.44, "tokens": 1024, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "code", "rep": 0}
+{"ttft_s": 0.379, "decode_tps": 14.47, "tokens": 1024, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "code", "rep": 1}
+{"ttft_s": 0.381, "decode_tps": 14.48, "tokens": 919, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "code", "rep": 2}
+{"ttft_s": 0.497, "decode_tps": 14.51, "tokens": 684, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "math", "rep": 0}
+{"ttft_s": 0.376, "decode_tps": 14.51, "tokens": 775, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "math", "rep": 1}
+{"ttft_s": 0.378, "decode_tps": 14.51, "tokens": 734, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "math", "rep": 2}
+{"ttft_s": 0.508, "decode_tps": 14.55, "tokens": 170, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "extract", "rep": 0}
+{"ttft_s": 0.363, "decode_tps": 14.51, "tokens": 556, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "extract", "rep": 1}
+{"ttft_s": 0.376, "decode_tps": 14.58, "tokens": 172, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "extract", "rep": 2}
+{"ttft_s": 0.444, "decode_tps": 14.44, "tokens": 751, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "prose", "rep": 0}
+{"ttft_s": 0.377, "decode_tps": 14.46, "tokens": 740, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "prose", "rep": 1}
+{"ttft_s": 0.365, "decode_tps": 14.49, "tokens": 670, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "prose", "rep": 2}
+SUMMARY plain token-weighted decode=14.47 tok/s median_ttft=0.38s n=15

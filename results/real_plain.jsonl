@@ -1,0 +1,11 @@
+{"ttft_s": 0.526, "time_to_answer_s": 7.542, "prompt_tokens": 28, "finish": "stop", "decode_tps": 14.39, "tokens": 1139, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "chat", "rep": 0}
+{"ttft_s": 0.379, "time_to_answer_s": 9.788, "prompt_tokens": 5, "finish": "stop", "decode_tps": 14.41, "tokens": 1137, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "chat", "rep": 1}
+{"ttft_s": 0.474, "time_to_answer_s": 12.446, "prompt_tokens": 36, "finish": "stop", "decode_tps": 14.44, "tokens": 1038, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "code", "rep": 0}
+{"ttft_s": 0.377, "time_to_answer_s": 14.614, "prompt_tokens": 5, "finish": "stop", "decode_tps": 14.43, "tokens": 1330, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "code", "rep": 1}
+{"ttft_s": 0.503, "time_to_answer_s": 28.926, "prompt_tokens": 48, "finish": "stop", "decode_tps": 14.5, "tokens": 678, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "math", "rep": 0}
+{"ttft_s": 0.369, "time_to_answer_s": 29.897, "prompt_tokens": 5, "finish": "stop", "decode_tps": 14.52, "tokens": 695, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "math", "rep": 1}
+{"ttft_s": 0.522, "time_to_answer_s": 22.078, "prompt_tokens": 58, "finish": "stop", "decode_tps": 14.51, "tokens": 391, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "extract", "rep": 0}
+{"ttft_s": 0.373, "time_to_answer_s": 27.566, "prompt_tokens": 5, "finish": "stop", "decode_tps": 14.51, "tokens": 482, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "extract", "rep": 1}
+{"ttft_s": 0.461, "time_to_answer_s": 12.499, "prompt_tokens": 25, "finish": "stop", "decode_tps": 14.46, "tokens": 650, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "prose", "rep": 0}
+{"ttft_s": 0.374, "time_to_answer_s": 9.178, "prompt_tokens": 5, "finish": "stop", "decode_tps": 14.46, "tokens": 583, "draft_n": null, "draft_acc": null, "label": "plain", "prompt": "prose", "rep": 1}
+SUMMARY plain token-weighted decode=14.45 tok/s median_ttft=0.46s median_time_to_answer=14.61s n=10 truncated=0

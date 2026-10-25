@@ -1,0 +1,16 @@
+{"ttft_s": 0.455, "decode_tps": 23.44, "tokens": 1024, "draft_n": 3158, "draft_acc": 570, "label": "dflash", "prompt": "chat", "rep": 0}
+{"ttft_s": 0.286, "decode_tps": 24.77, "tokens": 1024, "draft_n": 2981, "draft_acc": 595, "label": "dflash", "prompt": "chat", "rep": 1}
+{"ttft_s": 0.294, "decode_tps": 24.73, "tokens": 1024, "draft_n": 2992, "draft_acc": 594, "label": "dflash", "prompt": "chat", "rep": 2}
+{"ttft_s": 0.404, "decode_tps": 44.97, "tokens": 1024, "draft_n": 1630, "draft_acc": 790, "label": "dflash", "prompt": "code", "rep": 0}
+{"ttft_s": 0.296, "decode_tps": 47.92, "tokens": 951, "draft_n": 1421, "draft_acc": 747, "label": "dflash", "prompt": "code", "rep": 1}
+{"ttft_s": 0.29, "decode_tps": 47.79, "tokens": 932, "draft_n": 1400, "draft_acc": 731, "label": "dflash", "prompt": "code", "rep": 2}
+{"ttft_s": 0.429, "decode_tps": 67.77, "tokens": 724, "draft_n": 756, "draft_acc": 615, "label": "dflash", "prompt": "math", "rep": 0}
+{"ttft_s": 0.284, "decode_tps": 64.1, "tokens": 687, "draft_n": 763, "draft_acc": 577, "label": "dflash", "prompt": "math", "rep": 1}
+{"ttft_s": 0.298, "decode_tps": 65.79, "tokens": 713, "draft_n": 770, "draft_acc": 602, "label": "dflash", "prompt": "math", "rep": 2}
+{"ttft_s": 0.439, "decode_tps": 50.45, "tokens": 465, "draft_n": 658, "draft_acc": 370, "label": "dflash", "prompt": "extract", "rep": 0}
+{"ttft_s": 0.286, "decode_tps": 70.99, "tokens": 155, "draft_n": 154, "draft_acc": 132, "label": "dflash", "prompt": "extract", "rep": 1}
+{"ttft_s": 0.266, "decode_tps": 46.76, "tokens": 466, "draft_n": 714, "draft_acc": 363, "label": "dflash", "prompt": "extract", "rep": 2}
+{"ttft_s": 0.379, "decode_tps": 24.33, "tokens": 668, "draft_n": 1995, "draft_acc": 382, "label": "dflash", "prompt": "prose", "rep": 0}
+{"ttft_s": 0.292, "decode_tps": 23.47, "tokens": 749, "draft_n": 2317, "draft_acc": 417, "label": "dflash", "prompt": "prose", "rep": 1}
+{"ttft_s": 0.278, "decode_tps": 22.96, "tokens": 737, "draft_n": 2331, "draft_acc": 403, "label": "dflash", "prompt": "prose", "rep": 2}
+SUMMARY dflash token-weighted decode=34.00 tok/s median_ttft=0.29s n=15
