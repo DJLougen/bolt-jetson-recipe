@@ -136,8 +136,9 @@ Raw data: [`results/`](results/), charts regenerable via `scripts/make_graphs.py
 - DFlash acceptance is task-dependent: 6.5/7 on math/JSON, 2.1/7 on free-form
   prose — prose gets ~1.5×, structured output ~4.5×.
 - Greedy output can differ from plain decoding (llama.cpp
-  [#25618](https://github.com/ggml-org/llama.cpp/issues/25618)); identical on
-  code/math/JSON here, different on prose.
+  [#25618](https://github.com/ggml-org/llama.cpp/issues/25618)). Measured with
+  `scripts/determinism.py`, it differed on both prose and code. Math and JSON weren't
+  re-tested with full-text comparison. See "Why outputs differ between runs" below.
 - The 2.79 GiB per-layer embedding table lives on SSD, read on demand — resident
   memory is ~6.2 GiB with 16k ctx.
 
